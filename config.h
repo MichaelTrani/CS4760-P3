@@ -5,8 +5,7 @@
 #pragma once
 
 #define DEFAULT_TIME 100
-#define PROCESS_MAX 19
-
-
+#define PROCESS_RUNNING_MAX 5
+#define PROCESS_COUNT_MAX 20
 
 #endif
