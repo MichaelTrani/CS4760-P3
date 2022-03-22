@@ -3,7 +3,6 @@
 
 #include"p3.h"
 #include"config.h"
-#include <semaphore.h>
 
 pid_t waitreturn;      // for waiting on process to end
 int shmid;
@@ -32,7 +31,7 @@ int main(int argc, char* argv[]) {
     warning_message += "--WARNING--";
     error_message += "::ERROR: ";
 
-    system("mkdir logs");
+    system("mkdir logs | grep '' ");  // makes sure that the directory for the slave files exist
 
     // user args section
     int option;

@@ -62,14 +62,6 @@ int main(int argc, char* argv[]) {
     logfile.open(logname);
     catch_sigterm();
 
-    sem_t* sem;
-
-    if ((sem = sem_open(SEMAPHORE_NAME, O_CREAT, 0777, 1) )== SEM_FAILED) {
-        error_message += "sem_open";
-        perror(error_message.c_str());
-        exit(-1);
-    }
-
     // Log small details
     logfile << "Execution Time: " << timeIn << std::endl;
     logfile << "Process Number: " << processnum << std::endl;
@@ -91,6 +83,14 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
+    sem_t* sem;
+
+    if ((sem = sem_open(SEMAPHORE_NAME, O_CREAT, 0777, 1)) == SEM_FAILED) {
+        error_message += "sem_open";
+        perror(error_message.c_str());
+        exit(-1);
+    }
+
     int* cint = (int*)(shmat(shmid, 0, 0));  // read
     logfile << "Program number: " << *cint << std::endl;
 
@@ -101,33 +101,38 @@ int main(int argc, char* argv[]) {
 
     for (int i = 0; i < PROCESS_RUNNING_MAX; i++) // Limit how many programs at a time
     {
-        //execute code to enter critical section; log file this
-        choosing_ptr[(cprocess - 1)] = 1;
-        logfile << "Entering bakery\n";
-        for (int h = 0; h < maxslaves; h++) {
+        ////execute code to enter critical section; log file this
+        //choosing_ptr[(cprocess - 1)] = 1;
+        //logfile << "Entering bakery\n";
+        //for (int h = 0; h < maxslaves; h++) {
 
-            if ((ticketNumber_ptr[h]) > maximum)
-                maximum = (ticketNumber_ptr[h]);
-        }
+        //    if ((ticketNumber_ptr[h]) > maximum)
+        //        maximum = (ticketNumber_ptr[h]);
+        //}
 
-        ticketNumber_ptr[(cprocess - 1)] = 1 + maximum;
-        //std:: cout << "Slave Process:" << cprocess << " Ticket# "<< ticketNumber_ptr[(cprocess - 1)] << std::endl;
-        logfile << timeFunction() << "  Ticket# " << ticketNumber_ptr[(cprocess - 1)] << std::endl;
-        choosing_ptr[(cprocess - 1)] = 0;
+        //ticketNumber_ptr[(cprocess - 1)] = 1 + maximum;
+        ////std:: cout << "Slave Process:" << cprocess << " Ticket# "<< ticketNumber_ptr[(cprocess - 1)] << std::endl;
+        //logfile << timeFunction() << "  Ticket# " << ticketNumber_ptr[(cprocess - 1)] << std::endl;
+        //choosing_ptr[(cprocess - 1)] = 0;
 
-        for (int j = 0; j < maxslaves; j++)
-        {
-            while (choosing_ptr[j] == 1) {
-                ; // do nothing, just wait it out to flag choosing
-            }
+        //for (int j = 0; j < maxslaves; j++)
+        //{
+        //    while (choosing_ptr[j] == 1) {
+        //        ; // do nothing, just wait it out to flag choosing
+        //    }
 
-            while ((ticketNumber_ptr[j] != 0) && (ticketNumber_ptr[j] < ticketNumber_ptr[(cprocess - 1)])) {
-                ; // do nothing, just wait it out to get ticket number
-            }
-        }
+        //    while ((ticketNumber_ptr[j] != 0) && (ticketNumber_ptr[j] < ticketNumber_ptr[(cprocess - 1)])) {
+        //        ; // do nothing, just wait it out to get ticket number
+        //    }
+        //}
 
 
         //CRITICAL SECTION!!
+
+        logfile << "Calling sem_wait\n";
+
+        sem_wait(sem);
+
         std::ofstream primary;
         primary.open("cstest", std::ios_base::app);
         sleep(timerLock);
@@ -137,7 +142,10 @@ int main(int argc, char* argv[]) {
         sleep(timerLock);
 
         // closing critical section. setting ticket to 0
-        ticketNumber_ptr[cprocess - 1] = 0;
+        logfile << "Calling sem_post!!\n";
+
+        sem_post ( sem );
+        //ticketNumber_ptr[cprocess - 1] = 0;
     }
 
     shmdt(shared_num_ptr);
