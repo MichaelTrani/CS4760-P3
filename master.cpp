@@ -17,8 +17,6 @@ void sigint_catcher();
 std::string error_message;
 std::string warning_message;
 
-//std::string path = "./slave";
-
 pid_t* child_pid;
 int active_process_counter = 1;
 int total_processes = 5;
@@ -31,7 +29,7 @@ int main(int argc, char* argv[]) {
     warning_message += "--WARNING--";
     error_message += "::ERROR: ";
 
-    system("mkdir logs | grep '' ");  // makes sure that the directory for the slave files exist
+    system("mkdir logs | grep \"michael is great\" ");  // makes sure that the directory for the slave files exist
 
     // user args section
     int option;

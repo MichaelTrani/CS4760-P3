@@ -1,0 +1,54 @@
+MASTER(P3)						User Commands
+
+NAME
+	master - creates a chain of slave processes.
+COMPILE
+	$ make
+
+Decomplile:
+	$ make clean
+
+SYNOPSIS
+	./master [-h] [-t ss] [-n uu]
+
+DESCRIPTION
+	Linux System Calls and Library Functions
+
+	-h prints help message
+	-t ss   Timeout in seconds
+	-n uu   Number of total processes to run.
+	
+
+Author
+	Written by Michael Trani for CMP SCI 4760
+	February 2022
+
+
+
+Slave(P3)						User Commands
+
+NAME
+	slave - Writes to a file using semaphores. Logs activity in logs/ directory.
+COMPILE
+	$ make
+
+Decomplile:
+	$ make clean
+
+SYNOPSIS
+	./slave [-i num] [-t string] [-n num]
+
+DESCRIPTION
+	Linux System Calls and Library Functions
+
+	-i num		process ID
+	-t string	Time
+	-n num		Number of total processes to run.
+	
+
+Author
+	Written by Michael Trani for CMP SCI 4760
+	February 2022
+
+NOTE
+	An output file is created in this project for logging in the directory logs/.

@@ -31,7 +31,7 @@
 #define STR_SZ  sizeof ( std::string )
 #define INT_SZ  sizeof ( int )
 #define PERM (S_IRUSR | S_IWUSR)
-#define SEMAPHORE_NAME "/semaphore"
+#define SEMAPHORE_NAME "/semname"
 
 
     //shared memory attempt #3 :p

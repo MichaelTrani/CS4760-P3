@@ -101,31 +101,6 @@ int main(int argc, char* argv[]) {
 
     for (int i = 0; i < PROCESS_RUNNING_MAX; i++) // Limit how many programs at a time
     {
-        ////execute code to enter critical section; log file this
-        //choosing_ptr[(cprocess - 1)] = 1;
-        //logfile << "Entering bakery\n";
-        //for (int h = 0; h < maxslaves; h++) {
-
-        //    if ((ticketNumber_ptr[h]) > maximum)
-        //        maximum = (ticketNumber_ptr[h]);
-        //}
-
-        //ticketNumber_ptr[(cprocess - 1)] = 1 + maximum;
-        ////std:: cout << "Slave Process:" << cprocess << " Ticket# "<< ticketNumber_ptr[(cprocess - 1)] << std::endl;
-        //logfile << timeFunction() << "  Ticket# " << ticketNumber_ptr[(cprocess - 1)] << std::endl;
-        //choosing_ptr[(cprocess - 1)] = 0;
-
-        //for (int j = 0; j < maxslaves; j++)
-        //{
-        //    while (choosing_ptr[j] == 1) {
-        //        ; // do nothing, just wait it out to flag choosing
-        //    }
-
-        //    while ((ticketNumber_ptr[j] != 0) && (ticketNumber_ptr[j] < ticketNumber_ptr[(cprocess - 1)])) {
-        //        ; // do nothing, just wait it out to get ticket number
-        //    }
-        //}
-
 
         //CRITICAL SECTION!!
 
@@ -171,6 +146,8 @@ void sigterm_handler(int signum, siginfo_t* info, void* ptr) {
     shmctl(shmid_shared_num, IPC_RMID, NULL);
     shmctl(shmid_choosing, IPC_RMID, NULL);
     shmctl(shmid_ticketNumber, IPC_RMID, NULL);
+    sem_unlink(SEMAPHORE_NAME);
+
 
     logfile << "##### TERMINATED BY SIGNAL\n\n";
     logfile.close();
@@ -185,22 +162,3 @@ void catch_sigterm() {
     _sigact.sa_flags = SA_SIGINFO;
     sigaction(SIGTERM, &_sigact, NULL);
 }
-
-
-
-
-
-/*
-The slave just writes the message into the file inside the critical section.
-
-We want to have some log messages to see that the process is behaving appropriately and it does follow the guidance required for critical section.
-If a process starts to execute code to enter the critical section, it must print a message to that effect in its log file.
-It will be a good idea to include the time when that happens.
-Also, indicate the time in log file when the process actually enters and exits the critical section.
-Within the critical section, wait for a random number of seconds (in the range [1,5]) before you write into the file, and then, wait for another [1,5] seconds before leaving the critical section.
-For each child process, tweak the code so that the process requests and enters the critical section at most five times.
-
-
-The bakery algorithm requires you to specify the number of processes in the system.
-
-*/
