@@ -16,6 +16,10 @@
 #include <sys/wait.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+
+#include <semaphore.h>
+#include <fcntl.h>
+
 #include <time.h>
 #include <errno.h>
 #include <stdint.h>
@@ -23,12 +27,14 @@
 #include <sys/types.h>
 #include <signal.h>
 
-#define SHMKEY	859047
-#define STR_SZ	sizeof ( std::string )
-#define INT_SZ	sizeof ( int )
+#define SHMKEY  859047
+#define STR_SZ  sizeof ( std::string )
+#define INT_SZ  sizeof ( int )
 #define PERM (S_IRUSR | S_IWUSR)
+#define SEMAPHORE_NAME "/semaphore"
 
-//shared memory attempt #3 :p
+
+    //shared memory attempt #3 :p
 key_t shmkey;
 int shmid_shared_num;
 int* shared_num_ptr;
@@ -47,8 +53,8 @@ char* timeFunction() { // Grabs current time and outputs hour/min/sec
 }
 
 // Removes whitespace - no longer needed
-std::string whitespaceRemover(std::string modifyME){ // This removes an annoying whitespace fed into the program.
-    remove(modifyME.begin(), modifyME.end(), ' ');  
+std::string whitespaceRemover(std::string modifyME) { // This removes an annoying whitespace fed into the program.
+    remove(modifyME.begin(), modifyME.end(), ' ');
 
     return modifyME;
 }

@@ -35,15 +35,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{be4c5a33-fe0c-46c1-90c2-71ca22412d5d}</ProjectGuid>
+    <ProjectGuid>{f66e5f6f-119c-4408-a241-3d2c377a48cd}</ProjectGuid>
     <Keyword>Linux</Keyword>
-    <RootNamespace>P3</RootNamespace>
+    <RootNamespace>slave</RootNamespace>
     <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
     <ApplicationType>Linux</ApplicationType>
     <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
     <TargetLinuxPlatform>Generic</TargetLinuxPlatform>
     <LinuxProjectType>{D51BCBC9-82E9-4017-911E-C93873C4EA2B}</LinuxProjectType>
-    <ProjectName>master</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
@@ -78,21 +77,18 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(ProjectDir)bin\</OutDir>
-    <IntDir>$(ProjectDir)obj</IntDir>
+    <IntDir>$(ProjectDir)obj\</IntDir>
     <TargetExt />
     <RemoteIntRelDir>$(RemoteProjectRelDir)/</RemoteIntRelDir>
     <RemoteOutRelDir>$(RemoteProjectRelDir)/</RemoteOutRelDir>
     <RemoteDeployDir>$(RemoteRootDir)/</RemoteDeployDir>
   </PropertyGroup>
   <ItemGroup>
+    <ClCompile Include="slave.cpp" />
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="config.h" />
     <ClInclude Include="p3.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="master.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="makefile" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

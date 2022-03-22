@@ -1,7 +1,9 @@
 /*  Author: Michael Trani
     March 2022       */
+
 #include"p3.h"
 #include"config.h"
+#include <semaphore.h>
 
 pid_t waitreturn;      // for waiting on process to end
 int shmid;
@@ -16,12 +18,11 @@ void sigint_catcher();
 std::string error_message;
 std::string warning_message;
 
-std::string path = "./slave";
+//std::string path = "./slave";
 
 pid_t* child_pid;
 int active_process_counter = 1;
 int total_processes = 5;
-
 
 
 int main(int argc, char* argv[]) {
@@ -30,6 +31,8 @@ int main(int argc, char* argv[]) {
     warning_message = error_message;
     warning_message += "--WARNING--";
     error_message += "::ERROR: ";
+
+    system("mkdir logs");
 
     // user args section
     int option;
@@ -68,7 +71,15 @@ int main(int argc, char* argv[]) {
     }
 
     // Shared memory initialization section
-   
+    sem_unlink(SEMAPHORE_NAME);
+    sem_t* sem;
+
+    if ((sem = sem_open(SEMAPHORE_NAME, O_CREAT, 0777, 1)) == SEM_FAILED) {
+        error_message += "sem_open";
+        perror(error_message.c_str());
+        exit(-1);
+    }
+
     // Get shared memory segment identifier
     shmid = shmget(SHMKEY, STR_SZ, 0777 | IPC_CREAT); // STRING
     if (shmid == -1) {
@@ -79,7 +90,7 @@ int main(int argc, char* argv[]) {
     // for signal handling
     shmkey = ftok("./master", 246810);   // ##### KEY 1
     shmid_shared_num = shmget(shmkey, sizeof(shared_num_ptr), 0777 | IPC_CREAT);
-    shared_num_ptr = (int *)shmat(shmid_shared_num, NULL, 0);
+    shared_num_ptr = (int*)shmat(shmid_shared_num, NULL, 0);
     shared_num_ptr[0] = 0;
 
     char slave_max_stack[PROCESS_RUNNING_MAX];  // for writing to the buffer - for running
@@ -141,6 +152,7 @@ int main(int argc, char* argv[]) {
     free(child_pid);
     shmdt(shared_num_ptr);
     shmctl(shmid_shared_num, IPC_RMID, NULL);
+    sem_unlink(SEMAPHORE_NAME);
 
     return 0;
 }
@@ -154,19 +166,18 @@ void parent(int temp) {
 
     /* Write into the shared area. */
     *pint = temp;
-    //sleep(2);   // is this necessary?
 }
 
 void child() {
 
-    pid_t temp = getpid();  
+    pid_t temp = getpid();
 
     std::string slave_pid_arg = std::to_string(temp);  // argument for slave - PID
     std::string slave_time = timeFunction();       // argument for slave - time
     std::string slave_max = std::to_string(total_processes);    // argument for total num of processes
 
-    execl("./slave", "slave", "-i", slave_pid_arg.c_str(), "-t", slave_time.c_str(), "-n", slave_max.c_str(), (char*) NULL);
-    
+    execl("./slave", "slave", "-i", slave_pid_arg.c_str(), "-t", slave_time.c_str(), "-n", slave_max.c_str(), (char*)NULL);
+
     // If we get to this point the call failed.
     error_message += "::excel failed to execute.\n";
     perror(error_message.c_str());
@@ -183,6 +194,8 @@ void sigalrm_handler(int signum, siginfo_t* info, void* ptr) {
     // clean shared mem
     shmdt(shared_num_ptr);
     shmctl(shmid_shared_num, IPC_RMID, NULL);
+    sem_unlink(SEMAPHORE_NAME);
+
 
     pid_t ctemp[total_processes]; // temporary processes for slaves
 
@@ -192,7 +205,7 @@ void sigalrm_handler(int signum, siginfo_t* info, void* ptr) {
 
     free(child_pid);
 
-    // kill signal for slaves
+        // kill signal for slaves
     for (int j = 0; j < total_processes; j++) {
         kill(ctemp[j], SIGTERM);
     }
@@ -209,6 +222,7 @@ void sigint_handler(int signum, siginfo_t* info, void* ptr) {
     // clean shared mem
     shmdt(shared_num_ptr);
     shmctl(shmid_shared_num, IPC_RMID, NULL);
+    sem_unlink(SEMAPHORE_NAME);
 
     pid_t ctemp[total_processes]; // temporary processes for slaves
 
